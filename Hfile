@@ -1,7 +1,4 @@
-language:    Arabic
-
-
-
-persist:    false
-
+language: Arabic
+persist: false
+overwrite: true
 preserveVariableNames: true

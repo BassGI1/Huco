@@ -2,6 +2,7 @@ from sys import argv
 from json import load
 from subprocess import run
 from os import remove
+from os.path import isfile
 
 # this function parses the Hfile
 def parseHfile( path="Hfile" ):
@@ -13,7 +14,8 @@ def parseHfile( path="Hfile" ):
 	op = {
 		"language": None,
 		"preserveVariableNames": False,
-		"persist": False
+		"persist": False,
+		"overwrite": False
 	}
 
 	for option in optionsArray:
@@ -35,6 +37,11 @@ def parseHfile( path="Hfile" ):
 			elif value == "false": op["persist"] = False
 			else: raise Exception(f"{key} value ({value}) not acceptable")
 
+		elif key == "overwrite":
+			if value == "true": op["overwrite"] = True
+			elif value == "false": op["overwrite"] = False
+			else: raise Exception(f"{key} value ({value}) not acceptable")
+
 		else: raise Exception(f"{key} not allowed")
 
 	if not op["language"]: raise Exception(f"{key} setting missing")
@@ -51,12 +58,14 @@ def parseCommandLine():
 	return cmdArgs
 
 
-
 # setting up command line arguments and parsing Hfile
 cmdArgs = parseCommandLine()
 options = None
 if "pathToHfile" in cmdArgs: options = parseHfile(cmdArgs["pathToHfile"])
 else: options = parseHfile()
+
+# checking if the output file already exists and if the overwrite option is set
+if isfile(cmdArgs["outputFile"]) and not options["overwrite"]: raise Exception(f"file '{cmdArgs['outputFile']}' already exists!")
 
 # dynamically loading the appropriate language map
 languageMap = None
@@ -66,11 +75,18 @@ with open(f"languages/{options['language']}.json") as f:
 # opening the files
 inputFile = open(cmdArgs["inputFile"])
 rawInputText = inputFile.read()
-outputFile = open(cmdArgs["outputFile"], "a+")
+outputFile = open(cmdArgs["outputFile"], "w+")
 
 # doing the translation
-for token, value in languageMap.items():
-	rawInputText = rawInputText.replace(token, value)
+for tokenType, tokenObj in languageMap.items():
+	for token, value in tokenObj.items():
+
+		if tokenType == "keywords":
+			rawInputText = rawInputText.replace(" " + token, " " + value).replace(token + " ", value + " ").replace(token + ":", value + ":")
+
+		elif tokenType == "functions":
+			rawInputText = rawInputText.replace(token + "(", value + "(").replace(token + " (", value + " (")
+
 
 # writing the translated file and executing it
 outputFile.write(rawInputText)
