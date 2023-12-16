@@ -4,6 +4,17 @@ from subprocess import run
 from os import remove
 from os.path import isfile
 
+def reverseMap(lMap):
+	m = {
+		"types": {},
+		"keywords": {},
+		"functions": {}
+	}
+	for category, wordObj in lMap.items():
+		for word, translation in wordObj.items():
+			m[category][translation] = word
+	return m
+
 # this function parses the Hfile
 def parseHfile( path="Hfile" ):
 
@@ -13,9 +24,9 @@ def parseHfile( path="Hfile" ):
 
 	op = {
 		"language": None,
-		"preserveVariableNames": False,
 		"persist": False,
-		"overwrite": False
+		"overwrite": False,
+		"mode": None
 	}
 
 	for option in optionsArray:
@@ -27,11 +38,6 @@ def parseHfile( path="Hfile" ):
 			if value == "arabic": op["language"] = "Arabic"
 			else: raise Exception(f"{key} value ({value}) not acceptable")
 
-		elif key == "preserveVariableNames":
-			if value == "true": op["preserveVariableNames"] = True
-			elif value == "false": op["preserveVariableNames"] = False
-			else: raise Exception(f"{key} value ({value}) not acceptable")
-
 		elif key == "persist":
 			if value == "true": op["persist"] = True
 			elif value == "false": op["persist"] = False
@@ -40,6 +46,10 @@ def parseHfile( path="Hfile" ):
 		elif key == "overwrite":
 			if value == "true": op["overwrite"] = True
 			elif value == "false": op["overwrite"] = False
+			else: raise Exception(f"{key} value ({value}) not acceptable")
+
+		elif key == "mode":
+			if value == "reverse": op["mode"] = "reverse"
 			else: raise Exception(f"{key} value ({value}) not acceptable")
 
 		else: raise Exception(f"{key} not allowed")
@@ -71,6 +81,7 @@ if isfile(cmdArgs["outputFile"]) and not options["overwrite"]: raise Exception(f
 languageMap = None
 with open(f"languages/{options['language']}.json") as f:
 	languageMap = load(f)
+if options["mode"]: languageMap = reverseMap(languageMap)
 
 # opening the files
 inputFile = open(cmdArgs["inputFile"])
@@ -81,7 +92,10 @@ outputFile = open(cmdArgs["outputFile"], "w+")
 for tokenType, tokenObj in languageMap.items():
 	for token, value in tokenObj.items():
 
-		if tokenType == "keywords":
+		if tokenType == "types":
+			rawInputText = rawInputText.replace(" " + token + "(", " " + value + "(")
+
+		elif tokenType == "keywords":
 			rawInputText = rawInputText.replace(" " + token, " " + value).replace(token + " ", value + " ").replace(token + ":", value + ":")
 
 		elif tokenType == "functions":
@@ -91,7 +105,7 @@ for tokenType, tokenObj in languageMap.items():
 # writing the translated file and executing it
 outputFile.write(rawInputText)
 outputFile.close()
-run(["python3", cmdArgs["outputFile"]])
+if options["mode"] != "reverse": run(["python3", cmdArgs["outputFile"]])
 
 if not options["persist"]: remove(cmdArgs["outputFile"])
 
