@@ -1,10 +1,10 @@
 from sys import argv
-from subprocess import run
-from os import remove
-from os.path import isfile
 from lexer import lex
-from importlib import import_module
+from os import remove
 from shutil import rmtree
+from subprocess import run
+from os.path import isfile
+from importlib import import_module
 
 def reverseMap(lMap):
 	m = {}
