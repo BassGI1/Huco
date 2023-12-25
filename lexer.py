@@ -25,7 +25,8 @@ def lexStringArray(arr, words):
 def lex(src, words) -> str:
 	# define constants
 	illegalChars = {"(", ")", "+", "-", "/", "*", "^", "&", "|", "\n", "\t", " ", ":", ";", "#", "%", "@", "!", "~", "[", "]", "\\", "?", "<", ">", ".", ",", "`", "$", "=", '"', "'"}
-	flag = generateRandomSequence()
+	stringFlag = generateRandomSequence()
+	tokenFlag = generateRandomSequence()
 
 	# define variables
 	LexArray = []
@@ -48,7 +49,7 @@ def lex(src, words) -> str:
 				temp = src[srcPointer: rightPointer + 1] if LexArray[-1].lower() != "f" else "f" + src[srcPointer: rightPointer + 1]
 
 				stringArray.append(temp)
-				src = src.replace(temp, flag, 1)
+				src = src.replace(temp, stringFlag, 1)
 				srcLength = len(src)
 				srcPointer += 14
 
@@ -60,7 +61,7 @@ def lex(src, words) -> str:
 				temp = src[srcPointer: rightPointer + 1] if LexArray[-1].lower() != "f" else "f" + src[srcPointer: rightPointer + 1]
 				
 				stringArray.append(temp)
-				src = src.replace(temp, flag, 1)
+				src = src.replace(temp, stringFlag, 1)
 				srcLength = len(src)
 				srcPointer += 14
 
@@ -71,16 +72,20 @@ def lex(src, words) -> str:
 			token += src[srcPointer]
 			srcPointer += 1
 			if srcPointer >= srcLength:
-				LexArray.append(token)
+				if token in words:
+					LexArray.append(token)
+					src = src[:srcPointer - len(token)] + tokenFlag + src[:srcPointer]
+					srcLength = len(src)
 				break
 
-		LexArray.append(token)
+		if token in words:
+			LexArray.append(token)
+			src = src[:srcPointer - len(token)] + tokenFlag + src[srcPointer:]
+			srcLength = len(src)
 
 	lexStringArray(stringArray, words)
-	LexArray = [e for e in LexArray if e in words]
 
-	for elem in LexArray: src = src.replace(elem, words[elem], 1)
-	for string in stringArray:
-		src = src.replace(flag, string, 1)
+	for elem in LexArray: src = src.replace(tokenFlag, words[elem], 1)
+	for string in stringArray: src = src.replace(stringFlag, string, 1)
 
 	return src
