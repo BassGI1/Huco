@@ -16,3 +16,5 @@ The file tree is fairly simple. In the directory in which you are writing code, 
 - Hfile
 - languages - a directory which includes the language translations
 	- `The language files you use are put here`
+
+![Alt text](images/FileTree.png)
