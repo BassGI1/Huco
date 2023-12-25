@@ -17,4 +17,19 @@ The file tree is fairly simple. In the directory in which you are writing code, 
 - languages - a directory which includes the language translations
 	- `The language files you use are put here`
 
+Here's an example file tree
 ![Alt text](images/FileTree.png)
+
+### Using Languages
+All languages will be defined in their own python file. The python file must include only one dictionary variable named 'languageMap'. This will be used by the lexer to translate the files. 
+
+Here's an example of a language file
+![Alt text](images/ExampleLanguage.png)
+
+### The Hfile
+A file that must be included is the Hfile. The Hfile contains configuration information for the interpreter to setup. There are four configurations:
+- language - this tells the interpreter which file to look for in the languages directory to find the language map
+- persist - can take a value of true or false; tells the interpreter whether or not to write the output to a file after translation
+- overwrite - can take a value of true or false; tells the interpreter whether or not to overwrite any previous translations of the same name
+- mode - can take a value of 'reverse'; tells the interpreter to translate from english to the chosen language
+![Alt text](images/Hfile.png)
