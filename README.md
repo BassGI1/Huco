@@ -38,3 +38,30 @@ A file that must be included is the Hfile. The Hfile contains configuration info
 Here's an example Hfile
 
 ![Alt text](images/Hfile.png)
+
+### Command Line
+The command line usage is fairly simple. The first argument will be 'python' to invoke the python interpreter to run Huco. Next is the path to the untranslated file. The third argument is the path of the translated file. There is an optional argument after this one that is the path to the Hfile.
+
+Here's an example
+
+![Alt text](images/CommandLine.png)
+
+## Example
+We put everything together in the following example:
+This is the program
+
+![Alt text](images/TwoSumInArabic.png)
+
+We run the following commmand in our terminal:
+
+`python3 huco.py TwoSumInArabic.py output.py`
+
+which produces this file
+
+![Alt text](images/Output.png)
+
+and this output in the terminal
+
+![Alt text](images/TerminalOutput.png)
+
+## Feel free to create languages and share them with others!

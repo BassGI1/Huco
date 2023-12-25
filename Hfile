@@ -1,4 +1,3 @@
 language: Arabic
 persist: true
 overwrite: true
-mode: reverse
